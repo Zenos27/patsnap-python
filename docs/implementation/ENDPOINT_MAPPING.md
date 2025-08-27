@@ -142,5 +142,3 @@
 | [B041] | `patsnap.drugs.data.target_analysis()` | Target analysis |
 | [B047] | `patsnap.drugs.data.xdc()` | Drug xdc |
 | [B059] | `patsnap.drugs.data.approval_file()` | Drug approval file |
-
-This mapping transforms cryptic codes into intuitive, discoverable API methods! 🎯

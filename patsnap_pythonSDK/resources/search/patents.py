@@ -18,6 +18,8 @@ from ...models.search.patents import (
     ImageSearchSingleRequest,
     ImageSearchResponse,
     ImageSearchMultipleRequest,
+    PatentClaimSimRequest,
+    ClaimSimResponse,
 )
 
 
@@ -781,3 +783,78 @@ class PatentsSearchResource:
         
         # Parse and return response
         return ImageSearchResponse(**response["data"])
+    
+    def claim_similarity(
+        self,
+        *,
+        src: str,
+        tgt: str,
+    ) -> ClaimSimResponse:
+        """
+        Analyze the similarity between two patent claim texts.
+        
+        Analyzes the similarity between two claim texts and returns a similarity score between 0-1.
+        This interface is based on deep learning models that can accurately identify similarities
+        in technical features, structural composition, and expression methods of claims.
+        
+        Notes:
+        1. Input claim texts should be complete claims including technical features and limitations
+        2. Similarity scores above 0.8 indicate high similarity, 0.6-0.8 indicate moderate similarity, below 0.6 indicate low similarity
+        3. Supports analysis of Chinese and English claim texts
+        
+        Args:
+            src: Source claim text - complete claim including technical features and limitations
+            tgt: Target claim text - complete claim including technical features and limitations
+            
+        Returns:
+            ClaimSimResponse: Similarity analysis result with score between 0-1
+            
+        Raises:
+            ApiError: If the API request fails or returns an error
+            ValidationError: If the request parameters are invalid
+            
+        Example:
+            >>> resource = PatentsSearchResource(http_client)
+            >>> src_claim = '''1. A server system including:
+            ...     a permission server in communication with a plurality of clients,
+            ...     wherein the permission server utilizes client device information
+            ...     provided by the plurality of clients to determine an identifier
+            ...     corresponding to at least one data stream of a plurality of data
+            ...     streams for each of the plurality of clients;
+            ...     a memory; and
+            ...     at least one processor configured to multicast data to the
+            ...     plurality of clients...'''
+            >>> tgt_claim = '''1. A server system including:
+            ...     a memory; and
+            ...     at least one processor configured to multicast data to a
+            ...     plurality of clients...'''
+            >>> result = resource.claim_similarity(src=src_claim, tgt=tgt_claim)
+            >>> print(f"Similarity score: {result.data.score}")
+            >>> if result.data.score > 0.8:
+            ...     print("High similarity detected")
+            >>> elif result.data.score > 0.6:
+            ...     print("Moderate similarity detected")
+            >>> else:
+            ...     print("Low similarity detected")
+        """
+        # Create and validate request
+        request = PatentClaimSimRequest(
+            src=src,
+            tgt=tgt,
+        )
+        
+        # Convert request to dict and escape special characters for API compatibility
+        json_data = request.model_dump()
+        
+        # Escape special characters in claim texts to match API expectations
+        # The API expects escaped \r\n and \t characters
+        if 'src' in json_data:
+            json_data['src'] = json_data['src'].replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+        if 'tgt' in json_data:
+            json_data['tgt'] = json_data['tgt'].replace('\n', '\\n').replace('\r', '\\r').replace('\t', '\\t')
+        
+        # Make HTTP request
+        response = self._http.post("/search/patent/claim-sim", json=json_data)
+        
+        # Parse and return response
+        return ClaimSimResponse(**response)

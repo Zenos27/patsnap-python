@@ -72,6 +72,12 @@ multi_results = patsnap.patents.search.by_multiple_images(
     model=1,
     limit=75
 )
+
+# Claim similarity analysis
+similarity = patsnap.patents.search.claim_similarity(
+    src="1. A server system including: a permission server...",
+    tgt="1. A server system including: a memory; and at least one processor..."
+)
 ```
 
 ### Analytics Operations
@@ -148,6 +154,7 @@ patsnap help patents.search.by_image
 - ✅ `upload_image()` - [P010] Image Upload
 - 🔧 `by_image()` - [P060] Single Image Search
 - 🔧 `by_multiple_images()` - [P061] Multiple Image Search
+- ✅ `claim_similarity()` - [P100] Claim Similarity Analysis
 
 ### 📊 Analytics Operations (`patsnap.analytics.search`)
 - ✅ `query_count()` - [P001] Analytics Query Count
@@ -193,7 +200,7 @@ patsnap help patents.search.by_image
 - 🔧 **Implemented** - Code complete, needs testing
 - 🚧 **Planned** - Not yet implemented
 
-*Total: 250+ endpoints planned | Current: 11 implemented |*
+*Total: 250+ endpoints planned | Current: 12 implemented |*
 
 ## 🔧 Requirements
 

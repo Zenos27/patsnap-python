@@ -454,6 +454,44 @@ class ImageSearchMultipleRequest(BaseModel):
     stemming: Optional[int] = Field(default=0, description="Stemming function: 1=on, 0=off (default: 0)")
 
 
+class PatentClaimSimRequest(BaseModel):
+    """Request model for patent claim similarity analysis.
+    
+    Analyzes the similarity between two claim texts and returns a similarity score between 0-1.
+    This interface is based on deep learning models that can accurately identify similarities
+    in technical features, structural composition, and expression methods of claims.
+    
+    Notes:
+    1. Input claim texts should be complete claims including technical features and limitations
+    2. Similarity scores above 0.8 indicate high similarity, 0.6-0.8 indicate moderate similarity, below 0.6 indicate low similarity
+    3. Supports analysis of Chinese and English claim texts
+    
+    Example:
+        >>> request = PatentClaimSimRequest(
+        ...     src="1. A server system including: a permission server...",
+        ...     tgt="1. A server system including: a memory; and at least one processor..."
+        ... )
+    """
+    
+    src: str = Field(description="Source claim text - complete claim including technical features and limitations")
+    tgt: str = Field(description="Target claim text - complete claim including technical features and limitations")
+
+
+class ClaimSim(BaseModel):
+    """Claim similarity analysis result."""
+    
+    score: float = Field(description="Similarity score, range 0-1, higher value indicates higher similarity")
+
+
+class ClaimSimResponse(BaseModel):
+    """Response model for patent claim similarity analysis."""
+    
+    data: ClaimSim = Field(description="Similarity analysis result")
+    status: bool = Field(description="Status of the request")
+    error_code: int = Field(description="Error code (0 for success)")
+    error_msg: Optional[str] = Field(default=None, description="Error message if any")
+
+
 __all__ = [
     "PatentSearchPnRequest",
     "PatentBaseV2Response",
@@ -470,4 +508,7 @@ __all__ = [
     "PatentMessage",
     "ImageSearchResponse",
     "ImageSearchMultipleRequest",
+    "PatentClaimSimRequest",
+    "ClaimSim",
+    "ClaimSimResponse",
 ]

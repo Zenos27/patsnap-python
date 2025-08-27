@@ -13,6 +13,7 @@ Examples for patent search and data retrieval operations.
 - **image_upload.py** - Upload patent images for visual search operations
 - **image_search.py** - Visual patent search using image similarity analysis
 - **multi_image_search.py** - Multi-image patent search using up to 4 images for comprehensive analysis
+- **claim_similarity.py** - Analyze similarity between patent claim texts using deep learning models
 
 ## Planned Examples
 
@@ -119,6 +120,25 @@ results = patsnap.patents.search.by_multiple_images(
     model=1,  # Smart Recommendation (first image used for LOC prediction)
     limit=75
 )
+```
+
+### Patent Claim Similarity Analysis
+```python
+# Analyze similarity between two patent claim texts
+src_claim = """1. A server system including:
+    a permission server in communication with a plurality of clients..."""
+tgt_claim = """1. A server system including:
+    a memory; and at least one processor..."""
+
+result = patsnap.patents.search.claim_similarity(
+    src=src_claim,
+    tgt=tgt_claim
+)
+
+print(f"Similarity score: {result.data.score}")
+# Scores > 0.8: High similarity
+# Scores 0.6-0.8: Moderate similarity  
+# Scores < 0.6: Low similarity
 ```
 
 ## Common Use Cases

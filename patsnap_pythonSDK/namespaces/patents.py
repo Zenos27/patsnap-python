@@ -411,3 +411,77 @@ class PatentsSearchNamespace:
             >>> # The first image is used for LOC prediction and result reordering
         """
         return self._patents.multi_image_search(**kwargs)
+    
+    def claim_similarity(self, **kwargs):
+        """Analyze the similarity between two patent claim texts.
+        
+        Analyzes the similarity between two claim texts and returns a similarity score between 0-1.
+        This interface is based on deep learning models that can accurately identify similarities
+        in technical features, structural composition, and expression methods of claims.
+        
+        Notes:
+        1. Input claim texts should be complete claims including technical features and limitations
+        2. Similarity scores above 0.8 indicate high similarity, 0.6-0.8 indicate moderate similarity, below 0.6 indicate low similarity
+        3. Supports analysis of Chinese and English claim texts
+        
+        Args:
+            src: Source claim text - complete claim including technical features and limitations
+            tgt: Target claim text - complete claim including technical features and limitations
+            **kwargs: Additional parameters
+            
+        Returns:
+            ClaimSimResponse: Similarity analysis result with score between 0-1
+            
+        Raises:
+            ApiError: If the API request fails or returns an error
+            ValidationError: If the request parameters are invalid
+            
+        Example:
+            >>> src_claim = '''1. A server system including:
+            ...     a permission server in communication with a plurality of clients,
+            ...     wherein the permission server utilizes client device information
+            ...     provided by the plurality of clients to determine an identifier
+            ...     corresponding to at least one data stream of a plurality of data
+            ...     streams for each of the plurality of clients;
+            ...     a memory; and
+            ...     at least one processor configured to multicast data to the
+            ...     plurality of clients, each client storing the identifier provided
+            ...     by the permission server and corresponding to at least one data
+            ...     stream of the plurality of data streams associated with the client,
+            ...     wherein the at least one processor is further configured to:
+            ...         receive the plurality of the data streams, each of the data
+            ...         streams including data;
+            ...         determine the identifier corresponding to at least one of the
+            ...         plurality of received data streams;
+            ...         transmit, to the plurality of clients, a mapping between each
+            ...         identifier and a respective multicast stream; and
+            ...         multicast data of the plurality of received data streams in
+            ...         accordance with the mapping.'''
+            >>> tgt_claim = '''1. A server system including:
+            ...     a memory; and
+            ...     at least one processor configured to multicast data to a
+            ...     plurality of clients, each client storing an identifier
+            ...     corresponding to at least one data stream of a plurality of data
+            ...     streams associated with the client,
+            ...     wherein the at least one processor is further configured to:
+            ...         receive the plurality of the data streams, each of the data
+            ...         streams including data;
+            ...         determine the identifier corresponding to at least one of the
+            ...         plurality of received data streams;
+            ...         transmit, to the plurality of clients, a mapping between each
+            ...         identifier and a respective multicast stream; and
+            ...         multicast data of the plurality of received data streams in
+            ...         accordance with the mapping.'''
+            >>> result = patsnap.patents.search.claim_similarity(
+            ...     src=src_claim,
+            ...     tgt=tgt_claim
+            ... )
+            >>> print(f"Similarity score: {result.data.score}")
+            >>> if result.data.score > 0.8:
+            ...     print("High similarity detected")
+            >>> elif result.data.score > 0.6:
+            ...     print("Moderate similarity detected")
+            >>> else:
+            ...     print("Low similarity detected")
+        """
+        return self._patents.claim_similarity(**kwargs)
